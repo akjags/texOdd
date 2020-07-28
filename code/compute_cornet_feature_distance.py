@@ -23,7 +23,7 @@ def compute_feature_distance(obs_lay, obs_rf, trial_params, feature_dir):
       for p, poolsize in enumerate(trial_params['poolsize']):
         # First get original features
         out = [x for x, v in enumerate(filenames) if 'originals/{}'.format(img) in v]
-        assert len(out)==1
+        assert len(out)==1, 'Found more than 1 original {}'.format(out)
         orig_feat = features[out[0],:]
         # Next, get texture features
         idx = [x for x, v in enumerate(filenames) if 'textures/{}_{}_{}'.format(poolsize, layer, img) in v]
@@ -39,14 +39,15 @@ def compute_feature_distance(obs_lay, obs_rf, trial_params, feature_dir):
 
 if __name__ == '__main__':
   # Define directory in which features are found
-  feature_dir = '/scratch/groups/jlg/texture_stimuli/color/deepnet_features'
+  feature_dir = '/scratch/groups/jlg/texture_stimuli/color/deepnet_features2'
 
   images = ['face', 'jetplane', 'elephant', 'sand', 'lawn', 'dirt', 'tulips', 'fireworks', 'bananas']
-  
+  images = ['face', 'jetplane', 'elephant', 'sand', 'lawn', 'tulips', 'dirt', 'fireworks', 'bananas', 'apple', 'bear', 'cat', 'cruiseship', 'dalmatian', 'ferrari', 'greatdane', 'helicopter', 'horse', 'house', 'iphone', 'laptop', 'quarterback', 'samosa', 'shoes', 'stephcurry', 'tiger', 'truck', 'leaves', 'stars', 'tiles', 'worms', 'bumpy', 'spiky', 'clouds', 'crowd', 'forest', 'frills']
+ 
   trial_params = {'layer': ['pool1', 'pool2', 'pool4'], 'image': images, 
                   'poolsize': ['1x1', '2x2', '3x3', '4x4'], 'sample':[1,2]}
   observer_params = {'layer': ['V1', 'V2', 'V4', 'IT', 'decoder'], 
-                    'poolsize': ['1x1', '2x2', '3x3', '4x4', 'activ', 'diag']}
+                    'poolsize': ['activ']}
 
   feature_distance = {}
   for obs_rf in observer_params['poolsize']:
@@ -57,4 +58,5 @@ if __name__ == '__main__':
       feature_distance[model] = compute_feature_distance(obs_lay, obs_rf, trial_params, feature_dir)
 
   feature_distance['trial_params'] = trial_params
-  np.save('/scratch/users/akshayj/texOdd/cornet_featuredistances.npy', feature_distance)
+  feature_distance['observer_params'] = observer_params
+  np.save('/scratch/users/akshayj/texOdd/cornet_featuredistances_correlation.npy', feature_distance)
